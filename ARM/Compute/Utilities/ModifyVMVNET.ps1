@@ -66,7 +66,13 @@ Foreach($VM in $VMS)
             }
         }
         else {
-            Set-AzureRmVMOSDisk -vm $newVMConfig -Name $vm.StorageProfile.OsDisk.Name -CreateOption Attach -ManagedDiskId $vm.StorageProfile.OsDisk.ManagedDisk.Id -Linux
+             #We need to check again if the disk is managed or not for Linux VM variant
+             if($vm.storageProfile.OSDisk.ManagedDisk.ID -eq $null){
+                Set-AzureRmVMOSDisk -vm $newVMConfig -Name $vm.StorageProfile.OsDisk.Name -CreateOption Attach -vhdURI $vm.StorageProfile.OsDisk.Vhd.Uri -Linux 
+             }
+            else{
+                Set-AzureRmVMOSDisk -vm $newVMConfig -Name $vm.StorageProfile.OsDisk.Name -CreateOption Attach -ManagedDiskId $vm.StorageProfile.OsDisk.ManagedDisk.Id -Linux 
+            }
         }
         #Does the VM have any Data Disks?
         if($vm.StorageProfile.DataDisks -ne $null){
